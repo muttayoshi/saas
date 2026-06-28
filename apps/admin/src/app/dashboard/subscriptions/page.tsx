@@ -7,20 +7,24 @@ import { PaymentsTable, type PaymentRow } from "./_components/payments-table"
 export default async function SubscriptionsPage() {
   const supabase = await createClient()
 
-  const { data: subsData } = await supabase
+  const { data: subsData, error: subsErr } = await supabase
     .from("subscriptions")
     .select(
       "id, status, billing_period, current_period_end, plan:subscription_plans(name_id), user:profiles!subscriptions_user_profiles_fk(full_name, email)"
     )
     .order("current_period_end", { ascending: false })
+  // Surface query failures (e.g. an unresolved PostgREST embed) — otherwise a broken
+  // query and a genuinely empty table render identically.
+  if (subsErr) console.error("[admin subscriptions] subs query:", subsErr.message)
 
-  const { data: payData } = await supabase
+  const { data: payData, error: payErr } = await supabase
     .from("payments")
     .select(
       "id, order_id, amount, status, created_at, plan:subscription_plans(name_id), user:profiles!payments_user_profiles_fk(email)"
     )
     .order("created_at", { ascending: false })
     .limit(50)
+  if (payErr) console.error("[admin subscriptions] payments query:", payErr.message)
 
   const subs = (subsData ?? []) as unknown as SubRow[]
   const payments = (payData ?? []) as unknown as PaymentRow[]
