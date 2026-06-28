@@ -37,7 +37,7 @@ export async function createSubscriptionPayment(
   const amount = planAmount(plan, periodParse.data)
   if (amount <= 0) return { ok: false, error: "Harga paket belum diatur." }
 
-  const orderId = `sub-${randomUUID().slice(0, 8)}-${Date.now().toString(36)}`
+  const orderId = `sub-${randomUUID()}-${Date.now().toString(36)}`
 
   // Record the pending order with the service client (RLS-safe, server-trusted snapshot).
   const admin = createServiceClient()
@@ -84,14 +84,14 @@ export async function settleOrder(input: {
     .eq("order_id", input.orderId)
     .single()
   if (!payment) return
-  if (payment.status === "paid") return // idempotent
 
   const settled =
     input.transactionStatus === "settlement" || input.transactionStatus === "capture"
   const failed = ["deny", "cancel", "expire", "failure"].includes(input.transactionStatus)
 
   if (settled) {
-    await admin
+    // Atomic claim: only the first concurrent caller wins (pending → paid).
+    const { data: claimed } = await admin
       .from("payments")
       .update({
         status: "paid",
@@ -100,6 +100,9 @@ export async function settleOrder(input: {
         raw_notification: input.rawNotification ?? null,
       })
       .eq("order_id", input.orderId)
+      .eq("status", "pending")
+      .select()
+    if (!claimed || claimed.length === 0) return // already settled by a concurrent call — no-op
 
     // Extend the active subscription if not expired, else start fresh from now.
     const { data: existing } = await admin
@@ -115,7 +118,7 @@ export async function settleOrder(input: {
         new Date(existing.current_period_end) > now
           ? new Date(existing.current_period_end)
           : now
-      await admin
+      const { error: subErr } = await admin
         .from("subscriptions")
         .update({
           plan_id: payment.plan_id,
@@ -123,8 +126,14 @@ export async function settleOrder(input: {
           current_period_end: addPeriod(base, payment.billing_period).toISOString(),
         })
         .eq("id", existing.id)
+      if (subErr) {
+        console.error(
+          `[settleOrder] subscription update failed for order ${input.orderId}:`,
+          subErr
+        )
+      }
     } else {
-      await admin.from("subscriptions").insert({
+      const { error: subErr } = await admin.from("subscriptions").insert({
         user_id: payment.user_id,
         plan_id: payment.plan_id,
         billing_period: payment.billing_period,
@@ -132,8 +141,15 @@ export async function settleOrder(input: {
         current_period_start: now.toISOString(),
         current_period_end: addPeriod(now, payment.billing_period).toISOString(),
       })
+      if (subErr) {
+        console.error(
+          `[settleOrder] subscription insert failed for order ${input.orderId}:`,
+          subErr
+        )
+      }
     }
   } else if (failed) {
+    // Scope to pending so a failed notification can never overwrite an already-paid payment.
     await admin
       .from("payments")
       .update({
@@ -141,6 +157,7 @@ export async function settleOrder(input: {
         raw_notification: input.rawNotification ?? null,
       })
       .eq("order_id", input.orderId)
+      .eq("status", "pending")
   }
 }
 
