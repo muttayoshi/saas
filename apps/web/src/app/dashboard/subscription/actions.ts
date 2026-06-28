@@ -40,7 +40,17 @@ export async function createSubscriptionPayment(
   const orderId = `sub-${randomUUID()}-${Date.now().toString(36)}`
 
   // Record the pending order with the service client (RLS-safe, server-trusted snapshot).
-  const admin = createServiceClient()
+  // createServiceClient throws if SUPABASE_SERVICE_ROLE_KEY is unset — degrade to a
+  // friendly message instead of crashing the action.
+  let admin
+  try {
+    admin = createServiceClient()
+  } catch {
+    return {
+      ok: false,
+      error: "Pembayaran belum dikonfigurasi di server. Hubungi admin.",
+    }
+  }
   const { error: insErr } = await admin.from("payments").insert({
     order_id: orderId,
     user_id: user.id,
