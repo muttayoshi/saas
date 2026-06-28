@@ -15,7 +15,9 @@ function parseForm(formData: FormData) {
       .split("\n")
       .map((s) => s.trim())
       .filter(Boolean)
-  const num = (v: FormDataEntryValue | null) => Number(String(v ?? "0").trim() || "0")
+  // Coerce to integer: all numeric plan fields are z.number().int() in the schema.
+  const num = (v: FormDataEntryValue | null) =>
+    Math.trunc(Number(String(v ?? "0").trim() || "0"))
   const nullable = (v: FormDataEntryValue | null) => {
     const s = String(v ?? "").trim()
     return s === "" ? null : s

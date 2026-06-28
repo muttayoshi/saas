@@ -156,6 +156,7 @@ function Field({
         id={name}
         name={name}
         type={type}
+        step={type === "number" ? 1 : undefined}
         defaultValue={defaultValue ?? ""}
         required={required}
       />
@@ -191,7 +192,7 @@ function rupiah(n: number) {
 }
 
 export function PlansManager({ plans }: { plans: Plan[] }) {
-  const [pending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   function onDelete(p: Plan) {
