@@ -4,9 +4,9 @@
   "private": true,
   "description": "SaaS — Customer-facing website",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "NODE_OPTIONS='--dns-result-order=ipv4first' next dev --turbopack",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_OPTIONS='--dns-result-order=ipv4first' next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf .next dist"
