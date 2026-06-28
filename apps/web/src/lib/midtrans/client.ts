@@ -18,6 +18,8 @@ export async function createSnapTransaction(params: {
   itemName: string
   customer: { name: string; email: string }
 }): Promise<{ token: string; redirect_url: string }> {
+  // IDR has no decimals; enforce integer at the boundary so a float never reaches Midtrans.
+  const amount = Math.trunc(params.amount)
   const res = await fetch(SNAP_BASE, {
     method: "POST",
     headers: {
@@ -26,11 +28,11 @@ export async function createSnapTransaction(params: {
       Authorization: authHeader(),
     },
     body: JSON.stringify({
-      transaction_details: { order_id: params.orderId, gross_amount: params.amount },
+      transaction_details: { order_id: params.orderId, gross_amount: amount },
       item_details: [
         {
           id: params.orderId,
-          price: params.amount,
+          price: amount,
           quantity: 1,
           name: params.itemName.slice(0, 50),
         },
