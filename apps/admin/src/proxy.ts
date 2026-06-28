@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -30,7 +30,6 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const isLoginPage = request.nextUrl.pathname === "/login"
-  const isDashboardPage = request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname === "/"
 
   if (!user && !isLoginPage) {
     const url = request.nextUrl.clone()
@@ -41,13 +40,13 @@ export async function middleware(request: NextRequest) {
   if (user) {
     // Check if user is admin
     const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
       .single()
 
-    if (profile?.role !== 'admin' && !isLoginPage) {
-      // Redirect non-admins to a not-authorized page or out
+    if (profile?.role !== "admin" && !isLoginPage) {
+      // Redirect non-admins out
       const url = request.nextUrl.clone()
       url.pathname = "/login"
       url.searchParams.set("error", "unauthorized")
@@ -56,12 +55,12 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url)
     }
 
-    if (isLoginPage && profile?.role === 'admin') {
+    if (isLoginPage && profile?.role === "admin") {
       const url = request.nextUrl.clone()
       url.pathname = "/dashboard"
       return NextResponse.redirect(url)
     }
-    
+
     if (request.nextUrl.pathname === "/") {
       const url = request.nextUrl.clone()
       url.pathname = "/dashboard"
