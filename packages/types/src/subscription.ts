@@ -70,7 +70,13 @@ export const CreatePlanSchema = z.object({
 })
 export type CreatePlan = z.infer<typeof CreatePlanSchema>
 
-export const UpdatePlanSchema = CreatePlanSchema.partial()
+// Derived from PlanSchema (not CreatePlanSchema.partial()) so omitted fields stay
+// omitted — CreatePlanSchema's `.default()`s would otherwise inject ghost values on PATCH.
+export const UpdatePlanSchema = PlanSchema.omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+}).partial()
 export type UpdatePlan = z.infer<typeof UpdatePlanSchema>
 
 export const SubscriptionSchema = z.object({
