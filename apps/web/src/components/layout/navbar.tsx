@@ -3,7 +3,14 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { LogOut, User, LayoutDashboard, ChevronDown, CreditCard } from "lucide-react"
+import {
+  LogOut,
+  User,
+  LayoutDashboard,
+  ChevronDown,
+  CreditCard,
+  Sparkles,
+} from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -65,6 +72,17 @@ export function Navbar({ profile }: NavbarProps) {
             {profile ? (
               /* Logged in — main nav + user menu */
               <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="hidden sm:inline-flex"
+                >
+                  <Link href="/dashboard/premium" className="gap-1.5">
+                    <Sparkles className="h-4 w-4" />
+                    Premium
+                  </Link>
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
