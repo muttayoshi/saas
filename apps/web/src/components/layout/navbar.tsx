@@ -3,15 +3,17 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import {
-  LogOut, User, LayoutDashboard, ChevronDown,
-} from "lucide-react"
+import { LogOut, User, LayoutDashboard, ChevronDown, CreditCard } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import type { Profile } from "@app/types"
@@ -42,20 +44,18 @@ export function Navbar({ profile }: NavbarProps) {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-40 transition-all duration-300",
-        isScrolled
-          ? "glass-strong border-b border-border shadow-xl"
-          : "bg-transparent"
+        "fixed top-0 right-0 left-0 z-40 transition-all duration-300",
+        isScrolled ? "glass-strong border-border border-b shadow-xl" : "bg-transparent"
       )}
     >
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-black text-base group-hover:scale-105 transition-transform">
+          <Link href="/" className="group flex shrink-0 items-center gap-2.5">
+            <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-lg text-base font-black transition-transform group-hover:scale-105">
               S
             </div>
-            <span className="font-display font-bold text-base text-foreground hidden sm:block">
+            <span className="font-display text-foreground hidden text-base font-bold sm:block">
               SaaS
             </span>
           </Link>
@@ -66,24 +66,28 @@ export function Navbar({ profile }: NavbarProps) {
               /* Logged in — user menu */
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-2 rounded-xl p-1.5 pr-2.5 hover:bg-secondary transition-colors duration-150 group">
-                    <Avatar className="h-7 w-7 ring-1 ring-primary/30">
+                  <button className="hover:bg-secondary group flex items-center gap-2 rounded-xl p-1.5 pr-2.5 transition-colors duration-150">
+                    <Avatar className="ring-primary/30 h-7 w-7 ring-1">
                       <AvatarImage src={profile.avatar_url ?? undefined} />
                       <AvatarFallback className="text-xs">
                         {getInitials(profile.full_name)}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium text-foreground hidden sm:block max-w-[100px] truncate">
+                    <span className="text-foreground hidden max-w-[100px] truncate text-sm font-medium sm:block">
                       {profile.full_name.split(" ")[0]}
                     </span>
-                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                    <ChevronDown className="text-muted-foreground group-hover:text-foreground h-3.5 w-3.5 transition-colors" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-0.5">
-                      <p className="text-sm font-medium text-foreground truncate">{profile.full_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{profile.email}</p>
+                      <p className="text-foreground truncate text-sm font-medium">
+                        {profile.full_name}
+                      </p>
+                      <p className="text-muted-foreground truncate text-xs">
+                        {profile.email}
+                      </p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
@@ -99,6 +103,12 @@ export function Navbar({ profile }: NavbarProps) {
                       Profil Saya
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/subscription" className="gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      Langganan
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={handleLogout}
@@ -112,7 +122,12 @@ export function Navbar({ profile }: NavbarProps) {
             ) : (
               /* Logged out */
               <>
-                <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="hidden sm:inline-flex"
+                >
                   <Link href="/login">Masuk</Link>
                 </Button>
                 <Button variant="gold" size="sm" asChild>
