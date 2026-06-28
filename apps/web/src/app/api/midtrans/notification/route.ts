@@ -14,6 +14,7 @@ export async function POST(request: Request) {
     transaction_status?: string
     transaction_id?: string
     payment_type?: string
+    fraud_status?: string
   }
   try {
     body = await request.json()
@@ -46,6 +47,7 @@ export async function POST(request: Request) {
     transactionStatus: transaction_status,
     transactionId: body.transaction_id,
     paymentType: body.payment_type,
+    fraudStatus: body.fraud_status,
     rawNotification: body,
   })
 

@@ -75,6 +75,7 @@ export async function settleOrder(input: {
   transactionStatus: string
   transactionId?: string
   paymentType?: string
+  fraudStatus?: string
   rawNotification?: unknown
 }): Promise<void> {
   const admin = createServiceClient()
@@ -86,12 +87,13 @@ export async function settleOrder(input: {
   if (!payment) return
 
   const settled =
-    input.transactionStatus === "settlement" || input.transactionStatus === "capture"
+    input.transactionStatus === "settlement" ||
+    (input.transactionStatus === "capture" && input.fraudStatus === "accept")
   const failed = ["deny", "cancel", "expire", "failure"].includes(input.transactionStatus)
 
   if (settled) {
     // Atomic claim: only the first concurrent caller wins (pending → paid).
-    const { data: claimed } = await admin
+    const { data: claimed, error: claimErr } = await admin
       .from("payments")
       .update({
         status: "paid",
@@ -102,6 +104,12 @@ export async function settleOrder(input: {
       .eq("order_id", input.orderId)
       .eq("status", "pending")
       .select()
+    if (claimErr) {
+      console.error(
+        `[settleOrder] atomic-claim UPDATE failed for order ${input.orderId}:`,
+        claimErr
+      )
+    }
     if (!claimed || claimed.length === 0) return // already settled by a concurrent call — no-op
 
     // Extend the active subscription if not expired, else start fresh from now.
@@ -170,6 +178,7 @@ export async function reconcilePayment(orderId: string): Promise<void> {
       transactionStatus: s.transaction_status,
       transactionId: s.transaction_id,
       paymentType: s.payment_type,
+      fraudStatus: s.fraud_status,
       rawNotification: s,
     })
   } catch {

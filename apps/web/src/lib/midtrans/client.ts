@@ -54,6 +54,7 @@ export async function getMidtransStatus(orderId: string): Promise<{
   transaction_status: string
   transaction_id?: string
   payment_type?: string
+  fraud_status?: string
   status_code: string
   gross_amount: string
   signature_key?: string
