@@ -1,0 +1,7 @@
+-- =============================================================================
+-- Seed Data
+-- Run AFTER all migrations are applied.
+-- =============================================================================
+-- NOTE: profiles are created automatically by the handle_new_user trigger on
+-- signup, so no profile seed is needed here. Add reference/static data below
+-- as your app grows.

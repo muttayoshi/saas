@@ -1,0 +1,36 @@
+{
+  "name": "saas",
+  "private": true,
+  "version": "0.1.0",
+  "description": "SaaS monorepo starter",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "clean": "turbo run clean",
+    "prepare": "husky",
+    "db:migrate": "node scripts/migrate.mjs",
+    "db:seed": "node scripts/seed.mjs"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,md,json,css}": "prettier --write"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8",
+    "pg": "^8.13.1",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.8.0",
+    "turbo": "^2.5.4",
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "pnpm@11.8.0",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=11.0.0"
+  }
+}
