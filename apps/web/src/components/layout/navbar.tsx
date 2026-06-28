@@ -63,65 +63,83 @@ export function Navbar({ profile }: NavbarProps) {
           {/* Auth / Profile */}
           <div className="flex items-center gap-2">
             {profile ? (
-              /* Logged in — user menu */
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="hover:bg-secondary group flex items-center gap-2 rounded-xl p-1.5 pr-2.5 transition-colors duration-150">
-                    <Avatar className="ring-primary/30 h-7 w-7 ring-1">
-                      <AvatarImage src={profile.avatar_url ?? undefined} />
-                      <AvatarFallback className="text-xs">
-                        {getInitials(profile.full_name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-foreground hidden max-w-[100px] truncate text-sm font-medium sm:block">
-                      {profile.full_name.split(" ")[0]}
-                    </span>
-                    <ChevronDown className="text-muted-foreground group-hover:text-foreground h-3.5 w-3.5 transition-colors" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-0.5">
-                      <p className="text-foreground truncate text-sm font-medium">
-                        {profile.full_name}
-                      </p>
-                      <p className="text-muted-foreground truncate text-xs">
-                        {profile.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="gap-2">
-                      <LayoutDashboard className="h-4 w-4" />
-                      Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/profile" className="gap-2">
-                      <User className="h-4 w-4" />
-                      Profil Saya
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/subscription" className="gap-2">
-                      <CreditCard className="h-4 w-4" />
-                      Langganan
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className="text-destructive focus:text-destructive gap-2"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Keluar
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              /* Logged in — main nav + user menu */
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="hidden sm:inline-flex"
+                >
+                  <Link href="/dashboard/subscription">Langganan</Link>
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="hover:bg-secondary group flex items-center gap-2 rounded-xl p-1.5 pr-2.5 transition-colors duration-150">
+                      <Avatar className="ring-primary/30 h-7 w-7 ring-1">
+                        <AvatarImage src={profile.avatar_url ?? undefined} />
+                        <AvatarFallback className="text-xs">
+                          {getInitials(profile.full_name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-foreground hidden max-w-[100px] truncate text-sm font-medium sm:block">
+                        {profile.full_name.split(" ")[0]}
+                      </span>
+                      <ChevronDown className="text-muted-foreground group-hover:text-foreground h-3.5 w-3.5 transition-colors" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-0.5">
+                        <p className="text-foreground truncate text-sm font-medium">
+                          {profile.full_name}
+                        </p>
+                        <p className="text-muted-foreground truncate text-xs">
+                          {profile.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard" className="gap-2">
+                        <LayoutDashboard className="h-4 w-4" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/profile" className="gap-2">
+                        <User className="h-4 w-4" />
+                        Profil Saya
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/subscription" className="gap-2">
+                        <CreditCard className="h-4 w-4" />
+                        Langganan
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="text-destructive focus:text-destructive gap-2"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Keluar
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             ) : (
               /* Logged out */
               <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="hidden sm:inline-flex"
+                >
+                  <Link href="/pricing">Harga</Link>
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
