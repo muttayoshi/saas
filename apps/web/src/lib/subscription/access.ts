@@ -26,7 +26,12 @@ export async function getCurrentSubscription(
     .from("subscription_plans")
     .select("*")
     .eq("slug", "free")
-    .single()
+    .maybeSingle()
+
+  // The Free plan is seeded by migration 003 and must always exist; fail loudly
+  // rather than passing null through the `as Plan` cast and crashing callers later.
+  if (!free)
+    throw new Error("Free plan row (slug='free') missing from subscription_plans")
 
   return { plan: free as unknown as Plan, subscription: null }
 }
