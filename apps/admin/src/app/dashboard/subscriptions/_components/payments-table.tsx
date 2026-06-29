@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { PaymentStatusLabels, type PaymentStatus } from "@app/types"
+import { PaymentActions } from "./payment-actions"
 
 export type PaymentRow = {
   id: string
@@ -34,6 +35,7 @@ export function PaymentsTable({ rows }: { rows: PaymentRow[] }) {
             <th className="px-3 py-3 font-medium">Jumlah</th>
             <th className="px-3 py-3 font-medium">Tanggal</th>
             <th className="px-3 py-3 font-medium">Status</th>
+            <th className="px-3 py-3 text-right font-medium">Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -50,6 +52,13 @@ export function PaymentsTable({ rows }: { rows: PaymentRow[] }) {
                 <Badge variant={r.status === "paid" ? "default" : "outline"}>
                   {PaymentStatusLabels[r.status].id}
                 </Badge>
+              </td>
+              <td className="px-3 py-3 text-right">
+                {r.status === "pending" ? (
+                  <PaymentActions paymentId={r.id} />
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
               </td>
             </tr>
           ))}
