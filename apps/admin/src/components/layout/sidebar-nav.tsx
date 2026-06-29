@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Users } from "lucide-react"
+import { LayoutDashboard, Users, CreditCard, Receipt } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type NavLeaf = {
@@ -15,6 +15,8 @@ type NavLeaf = {
 const topItems: NavLeaf[] = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/users", label: "Pengguna", icon: Users },
+  { href: "/dashboard/plans", label: "Paket Langganan", icon: CreditCard },
+  { href: "/dashboard/subscriptions", label: "Langganan", icon: Receipt },
 ]
 
 function leafClasses(isActive: boolean) {
